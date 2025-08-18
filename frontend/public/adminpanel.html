@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Finca Roleplay</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #333333;
+      --primary-hover: #1a1a1a;
+      --secondary: #666666;
+      --secondary-hover: #4a4a4a;
+      --danger: #808080;
+      --warning: #999999;
+      --dark: #000000;
+      --dark-light: #1a1a1a;
+      --gray: #666666;
+      --gray-light: #999999;
+      --light: #f5f5f5;
+      --white: #ffffff;
+      --glass-bg: rgba(255, 255, 255, 0.05);
+      --glass-border: rgba(255, 255, 255, 0.1);
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, var(--dark) 0%, var(--dark-light) 50%, var(--primary) 100%);
+      color: var(--white);
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      min-height: 100vh;
+      padding-top: 80px;
+    }
+
+    /* Header exacto de la landing page */
+    header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+      background: rgba(0, 0, 0, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      height: 50px;
+    }
+
+    .logo img {
+      height: 35px;
+      width: auto;
+      max-width: 150px;
+      object-fit: contain;
+      transition: all 0.3s ease;
+      filter: brightness(1.2);
+    }
+
+    .logo img:hover {
+      filter: brightness(1.4);
+      transform: scale(1.05);
+    }
+
+    .logo-text {
+      color: var(--white);
+      font-size: 1.2rem;
+      font-weight: 500;
+      letter-spacing: 1px;
+    }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 2rem;
+    }
+
+    .nav-links a {
+      color: var(--white);
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .nav-links a:hover {
+      color: var(--gray-light);
+      text-shadow: 0 0 10px rgba(153, 153, 153, 0.8);
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(45deg, var(--secondary), var(--gray-light));
+      transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    /* Partículas de fondo */
+    .background-particles {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: rgba(153, 153, 153, 0.4);
+      border-radius: 50%;
+      animation: float 8s infinite ease-in-out;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+        opacity: 0.4;
+      }
+      50% {
+        transform: translateY(-100px) rotate(180deg);
+        opacity: 0.8;
+      }
+    }
+
+    /* Container principal con efecto glass */
+    .container {
+      max-width: 1400px;
+      margin: 30px auto;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(45deg, var(--secondary), var(--gray-light));
+      opacity: 0.8;
+    }
+
+    /* Adaptación del header existente */
+    header span {
+      color: var(--white);
+      font-size: 1.5em;
+      font-weight: 500;
+      letter-spacing: 1px;
+    }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 2rem;
+    }
+
+    .nav-links a {
+      color: var(--white);
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .nav-links a:hover {
+      color: var(--gray-light);
+      text-shadow: 0 0 10px rgba(153, 153, 153, 0.8);
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(45deg, var(--secondary), var(--gray-light));
+      transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .header-buttons {
+      display: flex;
+      list-style: none;
+      gap: 2rem;
+    }
+
+    .header-btn {
+      color: var(--white);
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .header-btn:hover {
+      color: var(--gray-light);
+      text-shadow: 0 0 10px rgba(153, 153, 153, 0.8);
+    }
+
+    .header-btn::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(45deg, var(--secondary), var(--gray-light));
+      transition: width 0.3s ease;
+    }
+
+    .header-btn:hover::after {
+      width: 100%;
+    }
+
+    h2, h3 {
+      margin-top: 0;
+      margin-bottom: 25px;
+      color: var(--light);
+      text-align: center;
+      font-size: 1.8rem;
+      background: linear-gradient(45deg, var(--white), var(--gray-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      position: relative;
+    }
+
+    h2::after, h3::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 2px;
+      background: linear-gradient(45deg, var(--secondary), var(--gray-light));
+      border-radius: 1px;
+    }
+
+    #filterForm, #userForm, #newUserForm {
+      background: var(--glass-bg);
+      backdrop-filter: blur(15px);
+      border: 1px solid var(--glass-border);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #filterForm:hover, #userForm:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(153, 153, 153, 0.15);
+    }
+
+    #userForm {
+      flex-direction: column;
+      max-width: 500px;
+      margin: 0 auto 40px;
+    }
+
+    #newUserForm {
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    label {
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: var(--light);
+      font-size: 1.1rem;
+      margin-right: 5px;
+    }
+
+    input, select, textarea {
+      padding: 15px;
+      border-radius: 12px;
+      border: 1px solid var(--glass-border);
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      color: var(--white);
+      font-size: 1em;
+      transition: all 0.3s ease;
+      outline: none;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--secondary);
+      box-shadow: 0 0 20px rgba(102, 102, 102, 0.3);
+      transform: translateY(-2px);
+    }
+
+    /* Personalización de selectores - NUEVO ESTILO */
+    select {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      
+      background-color: var(--glass-bg) !important;
+      color: var(--white) !important;
+      border: 1px solid var(--glass-border) !important;
+      
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23999999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 16px;
+      padding-right: 40px;
+    }
+
+    select option {
+      background-color: var(--dark) !important;
+      color: var(--white) !important;
+      padding: 10px;
+    }
+
+    select:hover {
+      border-color: var(--secondary) !important;
+      background-color: rgba(255, 255, 255, 0.08) !important;
+    }
+
+    select:focus {
+      border-color: var(--secondary) !important;
+      box-shadow: 0 0 20px rgba(102, 102, 102, 0.3) !important;
+      background-color: var(--glass-bg) !important;
+      outline: none;
+    }
+
+    select:focus-visible {
+      border-color: var(--secondary) !important;
+      box-shadow: 0 0 20px rgba(102, 102, 102, 0.3) !important;
+    }
+
+    button {
+      background: linear-gradient(45deg, var(--secondary), var(--gray));
+      color: var(--white);
+      border: none;
+      border-radius: 25px;
+      padding: 15px 30px;
+      font-size: 1.1em;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 15px;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 20px rgba(102, 102, 102, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    button:hover {
+      background: linear-gradient(45deg, var(--secondary-hover), var(--gray-light));
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(102, 102, 102, 0.5);
+    }
+
+    button:active {
+      transform: translateY(-1px);
+    }
+
+    button[type="submit"] {
+      background: linear-gradient(45deg, var(--secondary), var(--gray));
+    }
+
+    .activity-item {
+      background: var(--glass-bg);
+      backdrop-filter: blur(15px);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .activity-item:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 35px rgba(153, 153, 153, 0.15);
+    }
+
+    .activity-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(45deg, var(--secondary), var(--gray-light));
+      border-radius: 0 12px 12px 0;
+    }
+
+    .activity-item strong {
+      color: var(--gray-light);
+      display: inline-block;
+      min-width: 100px;
+    }
+
+    .activity-item p {
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+
+    .activity-item a {
+      color: var(--light);
+      text-decoration: none;
+      padding: 4px 8px;
+      background: rgba(153, 153, 153, 0.2);
+      border-radius: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .activity-item a:hover {
+      background: rgba(153, 153, 153, 0.4);
+      transform: scale(1.05);
+    }
+
+    a {
+      color: var(--light);
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    a:hover {
+      color: var(--gray-light);
+    }
+
+    #activityCount, #userMsg {
+      font-weight: bold;
+      margin-bottom: 20px;
+      text-align: center;
+      color: var(--light);
+      padding: 15px;
+      background: linear-gradient(45deg, rgba(102, 102, 102, 0.2), rgba(153, 153, 153, 0.2));
+      border-radius: 12px;
+      border: 1px solid rgba(102, 102, 102, 0.3);
+      backdrop-filter: blur(10px);
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .role-section {
+      background: var(--glass-bg);
+      backdrop-filter: blur(15px);
+      border: 1px solid var(--glass-border);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .role-section:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(153, 153, 153, 0.15);
+    }
+
+    .role-title {
+      color: var(--gray-light);
+      font-size: 1.2em;
+      margin-bottom: 15px;
+      border-bottom: 2px solid var(--secondary);
+      padding-bottom: 8px;
+      background: linear-gradient(45deg, var(--white), var(--gray-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+    }
+
+    .user-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .user-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(15px);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .user-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 35px rgba(153, 153, 153, 0.15);
+    }
+
+    .user-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(45deg, var(--secondary), var(--gray-light));
+      border-radius: 0 12px 12px 0;
+    }
+
+    .user-card p {
+      margin: 8px 0;
+      word-break: break-word;
+      line-height: 1.5;
+    }
+
+    .user-card strong {
+      color: var(--gray-light);
+      display: inline-block;
+      min-width: 80px;
+    }
+
+    .user-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .user-actions button {
+      flex: 1;
+      padding: 10px 15px;
+      font-size: 0.9em;
+      cursor: pointer;
+      margin-top: 0;
+      border-radius: 8px;
+    }
+
+    .delete-btn {
+      background: linear-gradient(45deg, var(--danger), #666666);
+    }
+
+    .delete-btn:hover {
+      background: linear-gradient(45deg, #666666, var(--secondary));
+      transform: translateY(-2px);
+    }
+
+    .edit-btn {
+      background: linear-gradient(45deg, var(--secondary), var(--gray-light));
+    }
+
+    .edit-btn:hover {
+      background: linear-gradient(45deg, var(--secondary-hover), var(--gray));
+      transform: translateY(-2px);
+    }
+
+    /* Scrollbar personalizada */
+    *::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    *::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+    }
+
+    *::-webkit-scrollbar-thumb {
+      background: linear-gradient(45deg, var(--secondary), var(--gray-light));
+      border-radius: 10px;
+    }
+
+    *::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(45deg, var(--secondary-hover), var(--gray));
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 100;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-content {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      margin: 15% auto;
+      padding: 30px;
+      border-radius: 20px;
+      width: 80%;
+      max-width: 500px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      position: relative;
+    }
+
+    .modal-content::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(45deg, var(--secondary), var(--gray-light));
+      opacity: 0.8;
+      border-radius: 20px 20px 0 0;
+    }
+
+    .close-modal {
+      color: var(--gray-light);
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      line-height: 1;
+    }
+
+    .close-modal:hover {
+      color: var(--white);
+      text-shadow: 0 0 10px rgba(153, 153, 153, 0.8);
+      transform: scale(1.1);
+    }
+
+    .modal-title {
+      color: var(--light);
+      margin-top: 0;
+      margin-bottom: 20px;
+      text-align: center;
+      background: linear-gradient(45deg, var(--white), var(--gray-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .form-row {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group label {
+      margin-bottom: 8px;
+      color: var(--light);
+      font-size: 16px;
+    }
+
+    .form-group input, .form-group select {
+      padding: 12px;
+      border-radius: 8px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--glass-border);
+      color: var(--white);
+      font-size: 14px;
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+
+    .form-group input:focus, .form-group select:focus {
+      border-color: var(--secondary);
+      box-shadow: 0 0 20px rgba(102, 102, 102, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .form-actions button {
+      padding: 12px 25px;
+      min-width: 150px;
+      text-align: center;
+    }
+
+    #debugInfo {
+      background: var(--glass-bg);
+      backdrop-filter: blur(15px);
+      border: 1px solid var(--glass-border);
+      color: var(--white);
+      padding: 20px;
+      margin-top: 20px;
+      border-radius: 12px;
+      font-family: monospace;
+      white-space: pre-wrap;
+      font-size: 0.9em;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+      .container {
+        margin: 20px;
+        padding: 30px;
+      }
+    }
+
+    @media (max-width: 900px) {
+      nav {
+        padding: 1rem;
+      }
+
+      body {
+        padding-top: 80px;
+      }
+
+      .container {
+        margin: 15px;
+        padding: 25px;
+      }
+
+      #filterForm {
+        flex-direction: column;
+        gap: 15px;
+        padding: 20px;
+      }
+
+      header span {
+        font-size: 1.2rem;
+      }
+
+      .header-buttons {
+        gap: 1.5rem;
+      }
+
+      .header-btn {
+        font-size: 0.9em;
+      }
+
+      .user-list {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 15px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      nav {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+      }
+
+      body {
+        padding-top: 120px;
+      }
+
+      .container {
+        margin: 10px;
+        padding: 20px;
+      }
+
+      #filterForm {
+        padding: 15px;
+      }
+
+      input, select, textarea {
+        padding: 12px;
+      }
+
+      button {
+        padding: 12px 24px;
+      }
+
+      .user-list {
+        grid-template-columns: 1fr;
+      }
+
+      .user-card {
+        padding: 15px;
+      }
+
+      .modal-content {
+        margin: 10% auto;
+        width: 95%;
+        padding: 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      header span {
+        font-size: 1rem;
+      }
+
+      .header-buttons {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+      }
+
+      body {
+        padding-top: 140px;
+      }
+
+      h2, h3 {
+        font-size: 1.3rem;
+      }
+
+      .activity-item strong, .user-card strong {
+        min-width: 70px;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Partículas de fondo -->
+  <div class="background-particles">
+    <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+    <div class="particle" style="left: 20%; animation-delay: 1s;"></div>
+    <div class="particle" style="left: 30%; animation-delay: 2s;"></div>
+    <div class="particle" style="left: 40%; animation-delay: 3s;"></div>
+    <div class="particle" style="left: 50%; animation-delay: 4s;"></div>
+    <div class="particle" style="left: 60%; animation-delay: 5s;"></div>
+    <div class="particle" style="left: 70%; animation-delay: 1.5s;"></div>
+    <div class="particle" style="left: 80%; animation-delay: 2.5s;"></div>
+    <div class="particle" style="left: 90%; animation-delay: 3.5s;"></div>
+  </div>
+
+  <header>
+    <nav>
+      <span>Panel de Directores</span>
+      <ul class="header-buttons">
+        <li><a href="#" class="header-btn" id="viewActivitiesBtn">Ver Actividades</a></li>
+        <li><a href="#" class="header-btn" id="manageUsersBtn">Administrar Usuarios</a></li>
+        <li><a href="#" class="header-btn" id="logoutBtn">Cerrar Sesión</a></li>
+      </ul>
+    </nav>
+  </header>
+  <div class="container">
+    <div id="activitiesSection" class="section active">
+      <h2>Listado de Actividades de Todo el Staff</h2>
+      <form id="filterForm">
+        <label for="roleSelect">Filtrar por rol:</label>
+        <select id="roleSelect" name="role">
+          <option value="">Todos</option>
+          <option value="Soporte/entrevistador">Soporte/entrevistador</option>
+          <option value="Moderador">Moderador</option>
+          <option value="Administrador">Administrador</option>
+          <option value="Gamemaster">Gamemaster</option>
+          <option value="director">director</option>
+        </select>
+
+        <label for="staffSelect">Filtrar por staff:</label>
+        <select id="staffSelect" name="staff">
+          <option value="">Todos</option>
+        </select>
+
+        <label for="startDate">Fecha inicio:</label>
+        <input type="date" id="startDate" name="startDate" />
+
+        <label for="endDate">Fecha fin:</label>
+        <input type="date" id="endDate" name="endDate" />
+
+        <button type="submit">Filtrar</button>
+      </form>
+
+      <div id="activityCount">Cargando actividades...</div>
+
+      <div id="activitiesList">Cargando actividades...</div>
+    </div>
+
+    <div id="usersSection" class="section">
+      <h2>Administración de Usuarios</h2>
+      
+      <div id="userForm">
+        <h3>Crear Nuevo Usuario</h3>
+        <div id="userMsg"></div>
+        <form id="newUserForm">
+          <label for="newUsername">Usuario</label>
+          <input type="text" id="newUsername" name="username" required />
+          <label for="newPassword">Contraseña</label>
+          <input type="password" id="newPassword" name="password" required />
+          <label for="newRole">Rol</label>
+          <select id="newRole" name="role" required>
+            <option value="">Selecciona rol</option>
+            <option value="Soporte/entrevistador">Soporte/entrevistador</option>
+            <option value="Moderador">Moderador</option>
+            <option value="Administrador">Administrador</option>
+            <option value="Gamemaster">Gamemaster</option>
+            <option value="director">director</option>
+          </select>
+          <button type="submit">Crear Usuario</button>
+        </form>
+      </div>
+
+      <h3>Usuarios por Rol</h3>
+      <div id="roleCategories">
+        <div class="role-section" id="soporteSection">
+          <div class="role-title">Soporte/entrevistador</div>
+          <div class="user-list" id="soporteList">Cargando usuarios...</div>
+        </div>
+        
+        <div class="role-section" id="moderadorSection">
+          <div class="role-title">Moderador</div>
+          <div class="user-list" id="moderadorList">Cargando usuarios...</div>
+        </div>
+        
+        <div class="role-section" id="adminSection">
+          <div class="role-title">Administrador</div>
+          <div class="user-list" id="adminList">Cargando usuarios...</div>
+        </div>
+        
+        <div class="role-section" id="gamemasterSection">
+          <div class="role-title">Gamemaster</div>
+          <div class="user-list" id="gamemasterList">Cargando usuarios...</div>
+        </div>
+      </div>
+      
+      <div id="debugInfo"></div>
+    </div>
+  </div>
+
+  <!-- Modal para editar usuario -->
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <h3 class="modal-title">Editar Usuario</h3>
+      <form id="editUserForm">
+        <input type="hidden" id="editUserId">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="editUsername"><strong>Usuario</strong></label>
+            <input type="text" id="editUsername" disabled>
+          </div>
+          <div class="form-group">
+            <label for="editRole"><strong>Rol</strong></label>
+            <select id="editRole" required>
+              <option value="Soporte/entrevistador">Soporte/entrevistador</option>
+              <option value="Moderador">Moderador</option>
+              <option value="Administrador">Administrador</option>
+              <option value="Gamemaster">Gamemaster</option>
+              <option value="director">director</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="header-btn">Guardar Cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal de confirmación para borrar usuario -->
+  <div id="deleteModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <h3 class="modal-title">Confirmar Eliminación</h3>
+      <p>¿Estás seguro de que deseas eliminar al usuario <span id="deleteUsername"></span>?</p>
+      <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+        <button id="cancelDelete" class="header-btn">Cancelar</button>
+        <button id="confirmDelete" class="delete-btn">Eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Header scroll effect - transparent on scroll
+    window.addEventListener('scroll', () => {
+      const header = document.querySelector('header');
+      if (window.scrollY > 100) {
+        header.style.background = 'rgba(0, 0, 0, 0.3)';
+        header.style.backdropFilter = 'blur(15px)';
+      } else {
+        header.style.background = 'rgba(0, 0, 0, 0.95)';
+        header.style.backdropFilter = 'blur(10px)';
+      }
+    });
+
+    // Crear partículas dinámicamente
+    function createParticles() {
+      const particlesContainer = document.querySelector('.background-particles');
+      const particleCount = 20;
+
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.top = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 8 + 's';
+        particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+        particlesContainer.appendChild(particle);
+      }
+    }
+
+    // Inicializar partículas
+    window.addEventListener('load', createParticles);
+
+    // Función de debug para mostrar información
+    function debugLog(message) {
+      const debugInfo = document.getElementById('debugInfo');
+      const timestamp = new Date().toLocaleTimeString();
+      debugInfo.textContent += `[${timestamp}] ${message}\n`;
+      console.log(message);
+    }
+    
+    // Variables globales
+    let allActivities = [];
+    let allUsers = [];
+    let currentUserId = null;
+    
+    // Asignar eventos directamente a los botones
+    document.addEventListener('DOMContentLoaded', function() {
+      debugLog('DOM cargado, iniciando configuración...');
+      
+      // Cambiar a sección de usuarios
+      document.getElementById('manageUsersBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        debugLog('Cambiando a sección de usuarios');
+        document.getElementById('activitiesSection').classList.remove('active');
+        document.getElementById('usersSection').classList.add('active');
+        loadUsers();
+      });
+      
+      // Cambiar a sección de actividades
+      document.getElementById('viewActivitiesBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        debugLog('Cambiando a sección de actividades');
+        document.getElementById('usersSection').classList.remove('active');
+        document.getElementById('activitiesSection').classList.add('active');
+        loadActivities();
+      });
+      
+      document.getElementById('logoutBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        handleLogout();
+      });
+      
+      // Configurar el formulario de filtro
+      document.getElementById('filterForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const role = document.getElementById('roleSelect').value;
+        const staff = document.getElementById('staffSelect').value;
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        loadActivities(role, staff, startDate, endDate);
+      });
+      
+      // Configurar el formulario de nuevo usuario
+      document.getElementById('newUserForm').addEventListener('submit', handleNewUser);
+      
+      // Configurar el formulario de edición
+      document.getElementById('editUserForm').addEventListener('submit', handleEditUser);
+      
+      // Configurar botones de modal
+      document.querySelectorAll('.close-modal').forEach(close => {
+        close.addEventListener('click', function() {
+          debugLog('Cerrando modal');
+          document.getElementById('editModal').style.display = 'none';
+          document.getElementById('deleteModal').style.display = 'none';
+        });
+      });
+      
+      document.getElementById('cancelDelete').addEventListener('click', function() {
+        document.getElementById('deleteModal').style.display = 'none';
+      });
+      
+      document.getElementById('confirmDelete').addEventListener('click', handleDeleteUser);
+      
+      // Inicializar
+      loadUsers();
+      loadActivities();
+    });
+    
+    // Manejar la creación de usuarios
+    async function handleNewUser(e) {
+      e.preventDefault();
+      const msgDiv = document.getElementById('userMsg');
+      msgDiv.textContent = '';
+
+      const username = document.getElementById('newUsername').value.trim();
+      const password = document.getElementById('newPassword').value.trim();
+      const role = document.getElementById('newRole').value;
+
+      if (!username || !password || !role) {
+        msgDiv.style.color = 'red';
+        msgDiv.textContent = 'Por favor completa todos los campos.';
+        return;
+      }
+      
+      debugLog(`Creando usuario: ${username} con rol ${role}`);
+
+      try {
+        const res = await fetch('/api/users', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ username, password, role })
+        });
+        if (res.status === 201) {
+          msgDiv.style.color = 'lightgreen';
+          msgDiv.textContent = 'Usuario creado correctamente.';
+          e.target.reset();
+          loadUsers();
+        } else {
+          const data = await res.json();
+          msgDiv.style.color = 'red';
+          msgDiv.textContent = data.error || 'Error al crear usuario.';
+        }
+      } catch (err) {
+        msgDiv.style.color = 'red';
+        msgDiv.textContent = 'Error al crear usuario.';
+        console.error(err);
+      }
+    }
+    
+    // Manejar la edición de usuarios
+    async function handleEditUser(e) {
+  e.preventDefault();
+  debugLog('Intentando guardar cambios de usuario');
+  
+  const userId = String(document.getElementById('editUserId').value);
+  const role = document.getElementById('editRole').value;
+  
+  debugLog(`Actualizando usuario ID: ${userId} con rol: ${role}`);
+  
+  try {
+    const res = await fetch(`/api/users/${userId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ role })
+    });
+    
+    if (res.ok) {
+      debugLog('Actualización exitosa');
+      // Actualizar la lista de usuarios
+      loadUsers();
+      document.getElementById('editModal').style.display = 'none';
+      
+      // Mensaje de éxito
+      const msgDiv = document.getElementById('userMsg');
+      msgDiv.style.color = 'lightgreen';
+      msgDiv.textContent = 'Usuario actualizado correctamente.';
+      
+      // Limpiar el mensaje después de 3 segundos
+      setTimeout(() => {
+        msgDiv.textContent = '';
+      }, 3000);
+    } else {
+      const data = await res.json();
+      debugLog(`Error en la respuesta: ${data.error}`);
+      alert(data.error || 'Error al actualizar el usuario');
+    }
+  } catch (error) {
+    debugLog(`Error en la petición: ${error}`);
+    console.error('Error al actualizar usuario:', error);
+    alert('Error al actualizar el usuario');
+  }
+}
+    
+    // Manejar la eliminación de usuarios
+    async function handleDeleteUser() {
+  if (!currentUserId) return;
+  
+  const userIdStr = String(currentUserId);
+  debugLog(`Eliminando usuario ID: ${userIdStr}`);
+  
+  try {
+    const res = await fetch(`/api/users/${userIdStr}`, {
+      method: 'DELETE',
+      credentials: 'include'
+    });
+    
+    if (res.ok) {
+      debugLog('Eliminación exitosa');
+      // Actualizar la lista de usuarios
+      loadUsers();
+      document.getElementById('deleteModal').style.display = 'none';
+      
+      // Mensaje de éxito
+      const msgDiv = document.getElementById('userMsg');
+      msgDiv.style.color = 'lightgreen';
+      msgDiv.textContent = 'Usuario eliminado correctamente.';
+      
+      // Limpiar el mensaje después de 3 segundos
+      setTimeout(() => {
+        msgDiv.textContent = '';
+      }, 3000);
+    } else {
+      const data = await res.json();
+      debugLog(`Error en la respuesta: ${data.error}`);
+      alert(data.error || 'Error al eliminar el usuario');
+    }
+  } catch (error) {
+    debugLog(`Error en la petición: ${error}`);
+    console.error('Error al eliminar usuario:', error);
+    alert('Error al eliminar el usuario');
+  }
+}
+
+  function dumpUserIds() {
+  debugLog('--- Volcado de IDs de usuarios ---');
+  debugLog(`Número total de usuarios: ${allUsers.length}`);
+  allUsers.forEach(user => {
+    debugLog(`Usuario: ${user.username}, ID: ${user.id}, Tipo: ${typeof user.id}`);
+  });
+  debugLog('--- Fin del volcado ---');
+}
+    
+    // Manejar el cierre de sesión
+    async function handleLogout() {
+      debugLog('Cerrando sesión...');
+      try {
+        const res = await fetch('/logout', {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Accept': 'application/json' }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          window.location.href = data.redirect || '/login.html';
+        } else {
+          window.location.href = '/login.html';
+        }
+      } catch (e) {
+        window.location.href = '/login.html';
+      }
+    }
+    
+    // Funciones para gestionar usuarios
+    async function loadUsers() {
+  debugLog('Cargando usuarios...');
+  try {
+    const res = await fetch('/api/users', { credentials: 'include' });
+    if (!res.ok) {
+      debugLog(`Error al cargar usuarios: ${res.status}`);
+      return;
+    }
+    
+    const users = await res.json();
+    debugLog(`Se cargaron ${users.length} usuarios`);
+    
+    // Convertir todos los IDs a string para evitar problemas de comparación
+    allUsers = users.map(user => ({
+      ...user, 
+      id: String(user.id)
+    }));
+    
+    // Actualizar el selector de staff para el filtro de actividades
+    const staffSelect = document.getElementById('staffSelect');
+    staffSelect.innerHTML = '<option value="">Todos</option>' +
+      allUsers.map(u => `<option value="${u.username}">${u.username} (${u.role})</option>`).join('');
+    
+    // Categorizar usuarios por rol
+    renderUsersByRole(allUsers);
+  } catch (error) {
+    debugLog(`Error al cargar usuarios: ${error.message}`);
+    console.error('Error al cargar usuarios:', error);
+    dumpUserIds();
+  }
+}
+    
+    function renderUsersByRole(users) {
+      debugLog('Renderizando usuarios por rol');
+      
+      // Limpiar las listas
+      document.getElementById('soporteList').innerHTML = '';
+      document.getElementById('moderadorList').innerHTML = '';
+      document.getElementById('adminList').innerHTML = '';
+      document.getElementById('gamemasterList').innerHTML = '';
+      
+      // Filtrar usuarios por rol
+      const soporteUsers = users.filter(u => u.role === 'Soporte/entrevistador');
+      const moderadorUsers = users.filter(u => u.role === 'Moderador');
+      const adminUsers = users.filter(u => u.role === 'Administrador');
+      const gamemasterUsers = users.filter(u => u.role === 'Gamemaster');
+      
+      debugLog(`Soporte: ${soporteUsers.length}, Moderador: ${moderadorUsers.length}, Admin: ${adminUsers.length}, GM: ${gamemasterUsers.length}`);
+      
+      // Render usuarios por categoría
+      renderUserList(soporteUsers, 'soporteList');
+      renderUserList(moderadorUsers, 'moderadorList');
+      renderUserList(adminUsers, 'adminList');
+      renderUserList(gamemasterUsers, 'gamemasterList');
+      
+      // Mostrar mensaje si no hay usuarios en una categoría
+      if (soporteUsers.length === 0) document.getElementById('soporteList').innerHTML = '<p>No hay usuarios con este rol.</p>';
+      if (moderadorUsers.length === 0) document.getElementById('moderadorList').innerHTML = '<p>No hay usuarios con este rol.</p>';
+      if (adminUsers.length === 0) document.getElementById('adminList').innerHTML = '<p>No hay usuarios con este rol.</p>';
+      if (gamemasterUsers.length === 0) document.getElementById('gamemasterList').innerHTML = '<p>No hay usuarios con este rol.</p>';
+      
+      // Agregar manejadores de eventos para los botones de edición y eliminación
+      setupUserButtons();
+    }
+    
+    function renderUserList(users, containerId) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = users.map(user => `
+    <div class="user-card" data-id="${String(user.id)}" data-username="${user.username}">
+      <p><strong>Usuario:</strong> ${user.username}</p>
+      <p><strong>Rol:</strong> ${user.role}</p>
+      <div class="user-actions">
+        <button class="edit-btn" data-action="edit" data-id="${String(user.id)}">Editar</button>
+        <button class="delete-btn" data-action="delete" data-id="${String(user.id)}">Borrar</button>
+      </div>
+    </div>
+  `).join('');
+}
+    
+    function setupUserButtons() {
+    debugLog('Configurando botones de usuario');
+  
+  // Agregar manejadores de eventos a los botones de edición
+  document.querySelectorAll('.edit-btn').forEach(button => {
+    button.addEventListener('click', function(e) {
+      e.preventDefault(); // Prevenir comportamiento por defecto
+      const userId = this.getAttribute('data-id');
+      debugLog(`Botón de editar presionado para usuario ID: ${userId}`);
+      openEditModal(userId);
+    });
+  });
+  
+  // Agregar manejadores de eventos a los botones de eliminación
+  document.querySelectorAll('.delete-btn').forEach(button => {
+    button.addEventListener('click', function(e) {
+      e.preventDefault(); // Prevenir comportamiento por defecto
+      const userId = this.getAttribute('data-id');
+      const userCard = this.closest('.user-card');
+      const username = userCard.getAttribute('data-username');
+      debugLog(`Botón de borrar presionado para usuario: ${username} (ID: ${userId})`);
+      openDeleteModal(userId, username);
+    });
+  });
+}
+    
+    // Funciones para los modales
+    function openEditModal(userId) {
+    const userIdStr = String(userId);
+    debugLog(`Abriendo modal de edición para usuario ID: ${userIdStr}`);
+  
+     // Hacer una comprobación más estricta
+    const user = allUsers.find(u => String(u.id) === userIdStr);
+  
+    if (!user) {
+      debugLog('No se encontró el usuario con ese ID');
+      debugLog(`IDs disponibles: ${allUsers.map(u => String(u.id)).join(', ')}`);
+      alert('Error: No se pudo encontrar el usuario para editar. Por favor recargue la página e intente nuevamente.');
+    return;
+  }
+  
+      document.getElementById('editUserId').value = user.id;
+      document.getElementById('editUsername').value = user.username;
+      document.getElementById('editRole').value = user.role;
+  
+      document.getElementById('editModal').style.display = 'block';
+}
+    
+    function openDeleteModal(userId, username) {
+      debugLog(`Abriendo modal de eliminación para usuario: ${username} (ID: ${userId})`);
+      currentUserId = userId;
+      document.getElementById('deleteUsername').textContent = username;
+      document.getElementById('deleteModal').style.display = 'block';
+    }
+    
+    // Código para la gestión de actividades
+    async function loadActivities(role = '', staff = '', startDate = '', endDate = '') {
+      let url = '/adminpanel/activities';
+      const params = [];
+      if (role) params.push(`role=${encodeURIComponent(role)}`);
+      if (staff) params.push(`staff=${encodeURIComponent(staff)}`);
+      if (startDate) params.push(`startDate=${encodeURIComponent(startDate)}`);
+      if (endDate) params.push(`endDate=${encodeURIComponent(endDate)}`);
+      url += params.length ? `?${params.join('&')}` : '';
+
+      debugLog(`Cargando actividades desde: ${url}`);
+
+      try {
+        const res = await fetch(url, { credentials: 'include' });
+        if (res.status === 403) {
+          debugLog('Error de permisos: 403 Forbidden');
+          alert('No tienes permiso para acceder a esta página');
+          window.location.href = '/login.html';
+          return;
+        }
+        if (!res.ok) {
+          debugLog(`Error al cargar actividades: ${res.status}`);
+          document.getElementById('activitiesList').innerHTML = '<p>Error al obtener actividades.</p>';
+          return;
+        }
+        const activities = await res.json();
+        debugLog(`Se cargaron ${activities.length} actividades`);
+        allActivities = activities;
+        renderActivities(activities, staff);
+
+        const countDiv = document.getElementById('activityCount');
+        countDiv.textContent = `Total de actividades de ${staff || 'todos'} desde ${startDate || 'el inicio'} hasta ${endDate || 'hoy'}: ${activities.length}`;
+      } catch (error) {
+        debugLog(`Error al cargar actividades: ${error.message}`);
+        console.error('Error al cargar actividades:', error);
+        document.getElementById('activitiesList').innerHTML = '<p>Error al conectar con el servidor.</p>';
+      }
+    }
+
+    function renderActivities(activities, staffFilter = '') {
+      const container = document.getElementById('activitiesList');
+      let filtered = activities;
+      if (staffFilter) {
+        filtered = filtered.filter(a => a.staff === staffFilter);
+      }
+      debugLog(`Renderizando ${filtered.length} actividades`);
+      
+      if (filtered.length === 0) {
+        container.innerHTML = '<p>No hay actividades para ese filtro.</p>';
+        return;
+      }
+      container.innerHTML = filtered.map(act => `
+        <div class="activity-item">
+          <p><strong>Staff:</strong> ${act.staff}</p>
+          <p><strong>Rol:</strong> ${act.role}</p>
+          <p><strong>Tipo:</strong> ${act.activityType}</p>
+          <p><strong>Usuario:</strong> ${act.user || 'No especificado'}</p>
+          <p><strong>Motivo:</strong> ${act.reason}</p>
+          <p><strong>Fecha:</strong> ${new Date(act.date).toLocaleString()}</p>
+          <p><strong>Prueba:</strong> ${
+            act.proof && act.proof.startsWith('http')
+              ? `<a href="${act.proof}" target="_blank">Enlace</a>`
+              : (act.proof ? `<a href="/uploads/${act.proof}" target="_blank">Archivo</a>` : 'N/A')
+          }</p>
+        </div>
+      `).join('');
+    }
+
+    // Función para cerrar modales si se hace clic fuera
+    window.onclick = function(event) {
+      if (event.target === document.getElementById('editModal')) {
+        debugLog('Cerrando modal de edición (clic fuera)');
+        document.getElementById('editModal').style.display = 'none';
+      }
+      if (event.target === document.getElementById('deleteModal')) {
+        debugLog('Cerrando modal de eliminación (clic fuera)');
+        document.getElementById('deleteModal').style.display = 'none';
+      }
+    };
+
+    // Efectos de hover para las secciones
+    document.querySelectorAll('.role-section').forEach(section => {
+      section.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-8px)';
+      });
+      
+      section.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0)';
+      });
+    });
+  </script>
+</body>
+</html>

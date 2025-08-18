@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finca Roleplay</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #333333;
+            --primary-hover: #1a1a1a;
+            --secondary: #666666;
+            --secondary-hover: #4a4a4a;
+            --danger: #808080;
+            --warning: #999999;
+            --dark: #000000;
+            --dark-light: #1a1a1a;
+            --gray: #666666;
+            --gray-light: #999999;
+            --light: #f5f5f5;
+            --white: #ffffff;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --success: #4ade80;
+            --info: #60a5fa;
+            --warning-text: #fbbf24;
+            --danger-text: #f87171;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, var(--dark) 0%, var(--dark-light) 50%, var(--primary) 100%);
+            color: var(--white);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(45deg, var(--secondary), var(--gray-light));
+            opacity: 0.8;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--white), var(--light), var(--gray-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(153, 153, 153, 0.5);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: var(--gray-light);
+            margin-bottom: 2rem;
+        }
+
+        .filter-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            padding: 0.8rem 1.5rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 25px;
+            color: var(--white);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            font-weight: 500;
+        }
+
+        .filter-tab:hover, .filter-tab.active {
+            background: linear-gradient(45deg, var(--secondary), var(--gray));
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 102, 102, 0.3);
+        }
+
+        .changelog-timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+
+        .changelog-entry {
+            position: relative;
+            margin-bottom: 3rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-left: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .changelog-entry:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(153, 153, 153, 0.15);
+        }
+
+        .changelog-entry::before {
+            content: '';
+            position: absolute;
+            left: -3rem;
+            top: 2rem;
+            width: 12px;
+            height: 12px;
+            background: var(--secondary);
+            border-radius: 50%;
+            border: 3px solid var(--dark);
+        }
+
+        .changelog-entry.major::before {
+            background: var(--success);
+            box-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+        }
+
+        .changelog-entry.hotfix::before {
+            background: var(--danger-text);
+            box-shadow: 0 0 10px rgba(248, 113, 113, 0.5);
+        }
+
+        .changelog-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .version-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .version-number {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, var(--white), var(--gray-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .version-type {
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .version-type.major {
+            background: linear-gradient(45deg, var(--success), #22c55e);
+            color: var(--dark);
+        }
+
+        .version-type.minor {
+            background: linear-gradient(45deg, var(--info), #3b82f6);
+            color: var(--white);
+        }
+
+        .version-type.hotfix {
+            background: linear-gradient(45deg, var(--danger-text), #ef4444);
+            color: var(--white);
+        }
+
+        .changelog-date {
+            color: var(--gray-light);
+            font-size: 0.9rem;
+        }
+
+        .changelog-content {
+            line-height: 1.8;
+        }
+
+        .changelog-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .changelog-section h4 {
+            color: var(--light);
+            margin-bottom: 0.8rem;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .changelog-section.added h4 {
+            color: var(--success);
+        }
+
+        .changelog-section.changed h4 {
+            color: var(--info);
+        }
+
+        .changelog-section.fixed h4 {
+            color: var(--warning-text);
+        }
+
+        .changelog-section.removed h4 {
+            color: var(--danger-text);
+        }
+
+        .changelog-list {
+            list-style: none;
+            padding-left: 1rem;
+        }
+
+        .changelog-list li {
+            margin-bottom: 0.5rem;
+            position: relative;
+            padding-left: 1.5rem;
+            color: var(--light);
+        }
+
+        .changelog-list li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--secondary);
+            font-weight: bold;
+        }
+
+        .changelog-section.added .changelog-list li::before {
+            content: '+';
+            color: var(--success);
+        }
+
+        .changelog-section.changed .changelog-list li::before {
+            content: '~';
+            color: var(--info);
+        }
+
+        .changelog-section.fixed .changelog-list li::before {
+            content: '✓';
+            color: var(--warning-text);
+        }
+
+        .changelog-section.removed .changelog-list li::before {
+            content: '-';
+            color: var(--danger-text);
+        }
+
+        .load-more {
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .load-more-btn {
+            background: linear-gradient(45deg, var(--secondary), var(--gray));
+            color: var(--white);
+            border: none;
+            border-radius: 25px;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(102, 102, 102, 0.3);
+        }
+
+        .load-more-btn:hover {
+            background: linear-gradient(45deg, var(--secondary-hover), var(--gray-light));
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(102, 102, 102, 0.5);
+        }
+
+        /* Icons */
+        .icon {
+            width: 16px;
+            height: 16px;
+            display: inline-block;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .container {
+                padding: 2rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .header p {
+                font-size: 1rem;
+            }
+
+            .filter-tabs {
+                gap: 0.5rem;
+            }
+
+            .filter-tab {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .changelog-timeline {
+                padding-left: 1rem;
+            }
+
+            .changelog-entry {
+                margin-left: 1rem;
+                padding: 1.5rem;
+            }
+
+            .changelog-entry::before {
+                left: -2rem;
+            }
+
+            .changelog-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .version-number {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 Registro de Cambios</h1>
+            <p>Mantente al día con todas las actualizaciones y mejoras del servidor</p>
+            
+            <div class="filter-tabs">
+                <div class="filter-tab active" data-filter="all">Todos</div>
+                <div class="filter-tab" data-filter="major">Major</div>
+                <div class="filter-tab" data-filter="minor">Minor</div>
+                <div class="filter-tab" data-filter="hotfix">Hotfix</div>
+            </div>
+        </div>
+
+        <div class="changelog-timeline">
+            <!-- Ejemplo de entrada major -->
+            <div class="changelog-entry major" data-type="major">
+                <div class="changelog-header">
+                    <div class="version-info">
+                        <span class="version-number">v2.1.0</span>
+                        <span class="version-type major">Major</span>
+                    </div>
+                    <span class="changelog-date">15 de Enero, 2025</span>
+                </div>
+                <div class="changelog-content">
+                    <div class="changelog-section added">
+                        <h4>
+                            <span class="icon">➕</span>
+                            Nuevas Características
+                        </h4>
+                        <ul class="changelog-list">
+                            <li>Sistema de casas completamente renovado con decoración personalizada</li>
+                            <li>Nuevos trabajos: Pescador y Minero con mecánicas únicas</li>
+                            <li>Sistema de bandas con territorios disputables</li>
+                            <li>Marketplace in-game para compra/venta entre jugadores</li>
+                        </ul>
+                    </div>
+                    <div class="changelog-section changed">
+                        <h4>
+                            <span class="icon">🔄</span>
+                            Cambios
+                        </h4>
+                        <ul class="changelog-list">
+                            <li>Rebalanceado el sistema económico para mayor equilibrio</li>
+                            <li>Mejorada la interfaz del inventario con mejor organización</li>
+                            <li>Actualizadas las animaciones de trabajos existentes</li>
+                        </ul>
+                    </div>
+                    <div class="changelog-section fixed">
+                        <h4>
+                            <span class="icon">🔧</span>
+                            Correcciones
+                        </h4>
+                        <ul class="changelog-list">
+                            <li>Solucionado bug donde los vehículos desaparecían al reiniciar</li>
+                            <li>Corregido problema con el chat que no mostraba mensajes largos</li>
+                            <li>Arreglados varios exploits en el sistema de drogas</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ejemplo de entrada minor -->
+            <div class="changelog-entry minor" data-type="minor">
+                <div class="changelog-header">
+                    <div class="version-info">
+                        <span class="version-number">v2.0.3</span>
+                        <span class="version-type minor">Minor</span>
+                    </div>
+                    <span class="changelog-date">8 de Enero, 2025</span>
+                </div>
+                <div class="changelog-content">
+                    <div class="changelog-section added">
+                        <h4>
+                            <span class="icon">➕</span>
+                            Nuevas Características
+                        </h4>
+                        <ul class="changelog-list">
+                            <li>Añadidos 15 nuevos vehículos deportivos</li>
+                            <li>Nuevo sistema de notificaciones mejorado</li>
+                        </ul>
+                    </div>
+                    <div class="changelog-section changed">
+                        <h4>
+                            <span class="icon">🔄</span>
+                            Cambios
+                        </h4>
+                        <ul class="changelog-list">
+                            <li>Optimizaciones de rendimiento en zonas concurridas</li>
+                            <li>Ajustados los precios de combustible</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ejemplo de entrada hotfix -->
+            <div class="changelog-entry hotfix" data-type="hotfix">
+                <div class="changelog-header">
+                    <div class="version-info">
+                        <span class="version-number">v2.0.2</span>
+                        <span class="version-type hotfix">Hotfix</span>
+                    </div>
+                    <span class="changelog-date">3 de Enero, 2025</span>
+                </div>
+                <div class="changelog-content">
+                    <div class="changelog-section fixed">
+                        <h4>
+                            <span class="icon">🔧</span>
+                            Correcciones Urgentes
+                        </h4>
+                        <ul class="changelog-list">
+                            <li>Solucionado crash crítico al entrar al servidor</li>
+                            <li>Corregido exploit de duplicación de dinero</li>
+                            <li>Arreglado problema con las licencias que no se guardaban</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Más entradas de ejemplo -->
+            <div class="changelog-entry major" data-type="major">
+                <div class="changelog-header">
+                    <div class="version-info">
+                        <span class="version-number">v2.0.0</span>
+                        <span class="version-type major">Major</span>
+                    </div>
+                    <span class="changelog-date">1 de Enero, 2025</span>
+                </div>
+                <div class="changelog-content">
+                    <div class="changelog-section added">
+                        <h4>
+                            <span class="icon">➕</span>
+                            ¡Gran Actualización de Año Nuevo!
+                        </h4>
+                        <ul class="changelog-list">
+                            <li>Mapa completamente renovado con nuevas localizaciones</li>
+                            <li>Sistema de clima dinámico</li>
+                            <li>Nuevas mecánicas de roleplay para policías</li>
+                            <li>Sistema de reputación entre jugadores</li>
+                        </ul>
+                    </div>
+                    <div class="changelog-section removed">
+                        <h4>
+                            <span class="icon">➖</span>
+                            Removido
+                        </h4>
+                        <ul class="changelog-list">
+                            <li>Sistema de drogas antiguo (reemplazado por uno nuevo)</li>
+                            <li>Vehículos obsoletos que causaban problemas</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="load-more">
+            <button class="load-more-btn" onclick="loadMore()">Cargar Más Versiones</button>
+        </div>
+    </div>
+
+    <script>
+        // Filter functionality
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Remove active class from all tabs
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                // Add active class to clicked tab
+                this.classList.add('active');
+                
+                const filter = this.dataset.filter;
+                filterChangelogs(filter);
+            });
+        });
+
+        function filterChangelogs(filter) {
+            const entries = document.querySelectorAll('.changelog-entry');
+            
+            entries.forEach(entry => {
+                if (filter === 'all') {
+                    entry.style.display = 'block';
+                    entry.style.animation = 'slideIn 0.3s ease';
+                } else {
+                    if (entry.dataset.type === filter) {
+                        entry.style.display = 'block';
+                        entry.style.animation = 'slideIn 0.3s ease';
+                    } else {
+                        entry.style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        function loadMore() {
+            // Simulación de carga de más contenido
+            const button = document.querySelector('.load-more-btn');
+            button.textContent = 'Cargando...';
+            button.disabled = true;
+            
+            setTimeout(() => {
+                button.textContent = 'Cargar Más Versiones';
+                button.disabled = false;
+                // Aquí cargarías más entradas del servidor
+            }, 1500);
+        }
+
+        // Add slide in animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Smooth scroll for timeline
+        document.querySelectorAll('.changelog-entry').forEach(entry => {
+            entry.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-8px) scale(1.02)';
+            });
+            
+            entry.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>
