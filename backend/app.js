@@ -10,21 +10,56 @@ const mysql = require('mysql2/promise');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const { fileTypeFromBuffer } = require('file-type');
+const validator = require('validator');
 
 // Cargar variables de entorno
 require('dotenv').config();
 
-// Validar que las variables de entorno existan
-const requiredEnvVars = ['DB_HOST', 'DB_USER', 'DB_PASSWORD', 'DB_NAME', 'SESSION_SECRET'];
-const missingEnvVars = requiredEnvVars.filter(varName => !process.env[varName]);
+// 🛡️ FUNCIÓN DE VALIDACIÓN DE VARIABLES DE ENTORNO MEJORADA
+function validateEnvironment() {
+  const requiredEnvVars = ['DB_HOST', 'DB_USER', 'DB_PASSWORD', 'DB_NAME', 'SESSION_SECRET'];
+  const missingEnvVars = requiredEnvVars.filter(varName => !process.env[varName]);
 
-if (missingEnvVars.length > 0) {
-  console.error('Error: Variables de entorno faltantes:', missingEnvVars);
-  console.error('Asegúrate de tener un archivo .env con las variables requeridas');
-  process.exit(1);
+  if (missingEnvVars.length > 0) {
+    console.error('❌ Error: Variables de entorno faltantes:', missingEnvVars);
+    console.error('📋 Crea un archivo .env con:');
+    requiredEnvVars.forEach(varName => {
+      console.error(`   ${varName}=tu_valor_aqui`);
+    });
+    process.exit(1);
+  }
+  
+  console.log('✅ Variables de entorno validadas correctamente');
 }
 
+// Validar entorno al inicio
+validateEnvironment();
+
 const port = process.env.PORT || 3000;
+
+// 🛡️ HEADERS DE SEGURIDAD
+app.use((req, res, next) => {
+  // Content Security Policy
+  res.setHeader('Content-Security-Policy', 
+    "default-src 'self'; " +
+    "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; " +
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+    "font-src 'self' https://fonts.gstatic.com; " +
+    "img-src 'self' data: https:; " +
+    "connect-src 'self';"
+  );
+  
+  // Otros headers de seguridad
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  
+  next();
+});
+
+// Ocultar tecnología del servidor
+app.disable('x-powered-by');
 
 const uploadDir = path.join(__dirname, 'uploads');
 
@@ -56,15 +91,21 @@ function saveUsers() {
 loadUsers();
 console.log('Usuarios cargados:', users.length, 'usuarios encontrados');
 
-const crypto = require('crypto');
-const { fileTypeFromBuffer } = require('file-type');
+// 🛡️ FUNCIÓN DE SANITIZACIÓN DE INPUTS
+function sanitizeInput(str) {
+  if (!str) return '';
+  return validator.escape(str.toString().trim());
+}
 
 const upload = multer({
-  storage: multer.memoryStorage(), // primero en memoria
-  limits: { fileSize: 20 * 1024 * 1024, files: 1 }, // 20 MB máx
+  storage: multer.memoryStorage(),
+  limits: { 
+    fileSize: 20 * 1024 * 1024, // 20 MB máx
+    files: 1 
+  },
 });
 
-// Tipos permitidos
+// Tipos permitidos con tamaños específicos
 const allowedMimeTypes = [
   'image/jpeg',
   'image/png',
@@ -74,29 +115,99 @@ const allowedMimeTypes = [
   'video/ogg'
 ];
 
-// Ejemplo de ruta de subida segura
+const maxSizes = {
+  'image/jpeg': 5 * 1024 * 1024,   // 5MB
+  'image/png': 5 * 1024 * 1024,    // 5MB
+  'image/gif': 10 * 1024 * 1024,   // 10MB
+  'video/mp4': 50 * 1024 * 1024,   // 50MB
+  'video/webm': 50 * 1024 * 1024,  // 50MB
+  'video/ogg': 50 * 1024 * 1024    // 50MB
+};
+
+// 🛡️ MIDDLEWARE PARA PROTEGER ARCHIVOS
+function ensureAuthenticatedFile(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.status(401).json({ error: 'Acceso no autorizado a archivo' });
+}
+
+// 🛡️ RUTAS PROTEGIDAS PARA SERVIR ARCHIVOS
+app.get('/secure-uploads/:filename', ensureAuthenticatedFile, (req, res) => {
+  const filename = req.params.filename;
+  
+  // Validar que el nombre de archivo sea seguro
+  if (!/^[a-zA-Z0-9\-_.]+$/.test(filename)) {
+    return res.status(400).json({ error: 'Nombre de archivo inválido' });
+  }
+  
+  const filePath = path.join(uploadDir, filename);
+  
+  // Verificar que el archivo existe y está dentro de uploadDir
+  if (!fs.existsSync(filePath) || !filePath.startsWith(uploadDir)) {
+    return res.status(404).json({ error: 'Archivo no encontrado' });
+  }
+  
+  // Log del acceso para auditoría
+  console.log(`Usuario ${req.user.username} accedió a archivo: ${filename}`);
+  
+  // Servir el archivo
+  res.sendFile(filePath);
+});
+
+// Ruta para directores que puedan ver cualquier archivo
+app.get('/admin-uploads/:filename', ensureDirector, (req, res) => {
+  const filename = req.params.filename;
+  
+  if (!/^[a-zA-Z0-9\-_.]+$/.test(filename)) {
+    return res.status(400).json({ error: 'Nombre de archivo inválido' });
+  }
+  
+  const filePath = path.join(uploadDir, filename);
+  
+  if (!fs.existsSync(filePath) || !filePath.startsWith(uploadDir)) {
+    return res.status(404).json({ error: 'Archivo no encontrado' });
+  }
+  
+  console.log(`Director ${req.user.username} accedió a archivo: ${filename}`);
+  res.sendFile(filePath);
+});
+
+// 🛡️ ENDPOINT DE UPLOAD MEJORADO CON SEGURIDAD
 app.post('/upload', upload.single('file'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No se envió archivo' });
     }
 
-    // Detectar tipo real
+    // Detectar tipo real del archivo
     const detected = await fileTypeFromBuffer(req.file.buffer);
     if (!detected || !allowedMimeTypes.includes(detected.mime)) {
       return res.status(400).json({ error: 'Tipo de archivo no permitido' });
     }
 
-    // Nombre seguro + extensión correcta
-    const safeName = `${Date.now()}-${crypto
-      .randomBytes(8)
-      .toString('hex')}.${detected.ext}`;
-    const savePath = path.join(uploadDir, safeName);
+    // Validar tamaño específico por tipo
+    if (req.file.buffer.length > (maxSizes[detected.mime] || 1024 * 1024)) {
+      return res.status(400).json({ error: 'Archivo demasiado grande para este tipo' });
+    }
 
-    // Guardar en disco solo si pasó validación
+    // Nombre ultra-seguro con UUID
+    const safeName = `${Date.now()}-${crypto.randomUUID()}.${detected.ext}`;
+    
+    // Organizar por fecha para mejor estructura
+    const dateFolder = new Date().toISOString().split('T')[0];
+    const uploadPath = path.join(uploadDir, dateFolder);
+    
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
+    }
+    
+    const savePath = path.join(uploadPath, safeName);
+
+    // Guardar en disco solo si pasó todas las validaciones
     fs.writeFileSync(savePath, req.file.buffer);
 
-    res.json({ success: true, file: `/uploads/${safeName}` });
+    res.json({ success: true, file: `/secure-uploads/${dateFolder}/${safeName}` });
   } catch (err) {
     console.error('Error en upload:', err);
     res.status(500).json({ error: 'Error al subir archivo' });
@@ -404,11 +515,47 @@ app.post('/logout', (req, res, next) => {
   });
 });
 
+// 🛡️ ENDPOINT MEJORADO PARA REGISTRAR ACTIVIDAD CON SANITIZACIÓN
 app.post('/register-activity', ensureAuthenticated, upload.single('media'), async (req, res) => {
   const { activityType, user, reason, proofLink } = req.body;
-  const mediaProof = req.file ? req.file.filename : null;
+  let proofPath = null;
   
-  if (!activityType || !user || !reason || (!mediaProof && !proofLink)) {
+  // Si hay archivo, procesarlo y guardarlo
+  if (req.file) {
+    try {
+      // Detectar tipo real
+      const detected = await fileTypeFromBuffer(req.file.buffer);
+      if (!detected || !allowedMimeTypes.includes(detected.mime)) {
+        return res.status(400).json({ error: 'Tipo de archivo no permitido' });
+      }
+
+      // Validar tamaño específico
+      if (req.file.buffer.length > (maxSizes[detected.mime] || 1024 * 1024)) {
+        return res.status(400).json({ error: 'Archivo demasiado grande para este tipo' });
+      }
+
+      // Nombre seguro + extensión correcta
+      const safeName = `${Date.now()}-${crypto.randomUUID()}.${detected.ext}`;
+      const savePath = path.join(uploadDir, safeName);
+
+      // Guardar en disco
+      fs.writeFileSync(savePath, req.file.buffer);
+      proofPath = safeName; // Solo el nombre del archivo
+    } catch (error) {
+      console.error('Error procesando archivo:', error);
+      return res.status(500).json({ error: 'Error al procesar archivo' });
+    }
+  }
+  
+  // 🛡️ SANITIZAR TODOS LOS INPUTS
+  const sanitizedData = {
+    activityType: sanitizeInput(activityType),
+    user: sanitizeInput(user),
+    reason: sanitizeInput(reason),
+    proof: proofPath || (proofLink && validator.isURL(proofLink) ? proofLink : null)
+  };
+
+  if (!sanitizedData.activityType || !sanitizedData.user || !sanitizedData.reason || !sanitizedData.proof) {
     return res.status(400).send('Faltan campos obligatorios');
   }
   
@@ -418,10 +565,10 @@ app.post('/register-activity', ensureAuthenticated, upload.single('media'), asyn
     const params = [
       req.user.username,
       req.user.role,
-      user,
-      activityType,
-      reason,
-      mediaProof || proofLink,
+      sanitizedData.user,
+      sanitizedData.activityType,
+      sanitizedData.reason,
+      sanitizedData.proof,
       new Date()
     ];
     await executeQuery(sql, params);
@@ -495,11 +642,17 @@ app.use((req, res, next) => {
 });
 
 app.use(express.static(path.join(__dirname, '../frontend/public')));
-app.use('/uploads', express.static(uploadDir));
 
+// 🛡️ MIDDLEWARE DE MANEJO DE ERRORES MEJORADO
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).send('Error interno del servidor');
+  
+  // No mostrar stack traces en producción
+  if (process.env.NODE_ENV === 'production') {
+    res.status(500).send('Error interno del servidor');
+  } else {
+    res.status(500).send(`Error interno del servidor: ${err.message}`);
+  }
 });
 
 // Función para cerrar el pool de conexiones cuando la app se cierre

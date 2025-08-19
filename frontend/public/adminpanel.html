@@ -1003,6 +1003,27 @@
   </div>
 
   <script>
+    // 🛡️ FUNCIONES DE SEGURIDAD - PROTECCIÓN XSS
+    function escapeHtml(unsafe) {
+      if (!unsafe) return 'No especificado';
+      return String(unsafe)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function isValidURL(string) {
+      if (!string) return false;
+      try {
+        const url = new URL(string);
+        return ['http:', 'https:'].includes(url.protocol);
+      } catch {
+        return false;
+      }
+    }
+
     // Header scroll effect - transparent on scroll
     window.addEventListener('scroll', () => {
       const header = document.querySelector('header');
@@ -1288,7 +1309,7 @@
     // Actualizar el selector de staff para el filtro de actividades
     const staffSelect = document.getElementById('staffSelect');
     staffSelect.innerHTML = '<option value="">Todos</option>' +
-      allUsers.map(u => `<option value="${u.username}">${u.username} (${u.role})</option>`).join('');
+      allUsers.map(u => `<option value="${escapeHtml(u.username)}">${escapeHtml(u.username)} (${escapeHtml(u.role)})</option>`).join('');
     
     // Categorizar usuarios por rol
     renderUsersByRole(allUsers);
@@ -1334,13 +1355,14 @@
     
     function renderUserList(users, containerId) {
     const container = document.getElementById(containerId);
+    // ✅ VERSIÓN SEGURA CON SANITIZACIÓN
     container.innerHTML = users.map(user => `
-    <div class="user-card" data-id="${String(user.id)}" data-username="${user.username}">
-      <p><strong>Usuario:</strong> ${user.username}</p>
-      <p><strong>Rol:</strong> ${user.role}</p>
+    <div class="user-card" data-id="${escapeHtml(String(user.id))}" data-username="${escapeHtml(user.username)}">
+      <p><strong>Usuario:</strong> ${escapeHtml(user.username)}</p>
+      <p><strong>Rol:</strong> ${escapeHtml(user.role)}</p>
       <div class="user-actions">
-        <button class="edit-btn" data-action="edit" data-id="${String(user.id)}">Editar</button>
-        <button class="delete-btn" data-action="delete" data-id="${String(user.id)}">Borrar</button>
+        <button class="edit-btn" data-action="edit" data-id="${escapeHtml(String(user.id))}">Editar</button>
+        <button class="delete-btn" data-action="delete" data-id="${escapeHtml(String(user.id))}">Borrar</button>
       </div>
     </div>
   `).join('');
@@ -1452,18 +1474,19 @@
         container.innerHTML = '<p>No hay actividades para ese filtro.</p>';
         return;
       }
+      // ✅ VERSIÓN SEGURA CON SANITIZACIÓN
       container.innerHTML = filtered.map(act => `
         <div class="activity-item">
-          <p><strong>Staff:</strong> ${act.staff}</p>
-          <p><strong>Rol:</strong> ${act.role}</p>
-          <p><strong>Tipo:</strong> ${act.activityType}</p>
-          <p><strong>Usuario:</strong> ${act.user || 'No especificado'}</p>
-          <p><strong>Motivo:</strong> ${act.reason}</p>
-          <p><strong>Fecha:</strong> ${new Date(act.date).toLocaleString()}</p>
+          <p><strong>Staff:</strong> ${escapeHtml(act.staff)}</p>
+          <p><strong>Rol:</strong> ${escapeHtml(act.role)}</p>
+          <p><strong>Tipo:</strong> ${escapeHtml(act.activityType)}</p>
+          <p><strong>Usuario:</strong> ${escapeHtml(act.user)}</p>
+          <p><strong>Motivo:</strong> ${escapeHtml(act.reason)}</p>
+          <p><strong>Fecha:</strong> ${escapeHtml(new Date(act.date).toLocaleString())}</p>
           <p><strong>Prueba:</strong> ${
-            act.proof && act.proof.startsWith('http')
-              ? `<a href="${act.proof}" target="_blank">Enlace</a>`
-              : (act.proof ? `<a href="/uploads/${act.proof}" target="_blank">Archivo</a>` : 'N/A')
+            act.proof && isValidURL(act.proof)
+              ? `<a href="${escapeHtml(act.proof)}" target="_blank" rel="noopener noreferrer">Enlace</a>`
+              : (act.proof ? `<a href="/secure-uploads/${escapeHtml(act.proof)}" target="_blank">Archivo</a>` : 'N/A')
           }</p>
         </div>
       `).join('');

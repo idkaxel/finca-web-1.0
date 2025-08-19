@@ -650,6 +650,27 @@
   </div>
 
   <script>
+    // 🛡️ FUNCIONES DE SEGURIDAD - PROTECCIÓN XSS
+    function escapeHtml(unsafe) {
+      if (!unsafe) return 'No especificado';
+      return String(unsafe)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function isValidURL(string) {
+      if (!string) return false;
+      try {
+        const url = new URL(string);
+        return ['http:', 'https:'].includes(url.protocol);
+      } catch {
+        return false;
+      }
+    }
+
     // Header scroll effect - transparent on scroll
     window.addEventListener('scroll', () => {
       const header = document.querySelector('header');
@@ -772,7 +793,7 @@
       }, 3500);
     }
 
-    // Cargar actividades del usuario
+    // Cargar actividades del usuario - VERSIÓN SEGURA
     async function cargarActividades() {
       const contenedor = document.getElementById('actividadesRecientes');
       contenedor.innerHTML = 'Cargando actividades...';
@@ -788,16 +809,17 @@
           contenedor.innerHTML = '<p>No tienes actividades registradas aún.</p>';
           return;
         }
+        // ✅ VERSIÓN SEGURA CON SANITIZACIÓN
         contenedor.innerHTML = actividades.map(act => `
           <div class="actividad">
-            <div><strong>Tipo:</strong> ${act.activityType}</div>
-            <div><strong>Usuario:</strong> ${act.user || 'No especificado'}</div>
-            <div><strong>Descripción:</strong> ${act.reason}</div>
-            <div><strong>Fecha:</strong> ${new Date(act.date).toLocaleString()}</div>
+            <div><strong>Tipo:</strong> ${escapeHtml(act.activityType)}</div>
+            <div><strong>Usuario:</strong> ${escapeHtml(act.user)}</div>
+            <div><strong>Descripción:</strong> ${escapeHtml(act.reason)}</div>
+            <div><strong>Fecha:</strong> ${escapeHtml(new Date(act.date).toLocaleString())}</div>
             <div><strong>Prueba:</strong> ${
-              act.proof && act.proof.startsWith('http')
-                ? `<a href="${act.proof}" target="_blank">Enlace</a>`
-                : (act.proof ? `<a href="/uploads/${act.proof}" target="_blank">Archivo</a>` : 'N/A')
+              act.proof && isValidURL(act.proof)
+                ? `<a href="${escapeHtml(act.proof)}" target="_blank" rel="noopener noreferrer">Enlace</a>`
+                : (act.proof ? `<a href="/secure-uploads/${escapeHtml(act.proof)}" target="_blank">Archivo</a>` : 'N/A')
             }</div>
           </div>
         `).join('');
