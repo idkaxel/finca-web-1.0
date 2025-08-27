@@ -3,26 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Staff Login - Finca Roleplay</title>
+  <title>Login</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <!-- Partículas de fondo -->
-  <div class="background-particles">
-    <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
-    <div class="particle" style="left: 20%; animation-delay: 1s;"></div>
-    <div class="particle" style="left: 30%; animation-delay: 2s;"></div>
-    <div class="particle" style="left: 40%; animation-delay: 3s;"></div>
-    <div class="particle" style="left: 50%; animation-delay: 4s;"></div>
-    <div class="particle" style="left: 60%; animation-delay: 5s;"></div>
-    <div class="particle" style="left: 70%; animation-delay: 1.5s;"></div>
-    <div class="particle" style="left: 80%; animation-delay: 2.5s;"></div>
-    <div class="particle" style="left: 90%; animation-delay: 3.5s;"></div>
-  </div>
-
   <div class="login-container">
     <div class="logo-container">
       <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -33,7 +20,7 @@
     <h1>Staff Login</h1>
     <p class="login-subtitle">Accede a tu panel de control</p>
     
-    <form action="/login" method="post" class="login-form" id="loginForm">
+    <form action="/login" method="post" class="login-form">
       <div class="form-group">
         <label for="username">Usuario</label>
         <div class="input-with-icon">
@@ -56,12 +43,9 @@
         </div>
       </div>
       
-      <button type="submit" class="login-button" id="submitBtn">
-        <span id="buttonText">Ingresar</span>
-        <div id="loadingSpinner" class="loading-spinner" style="display: none;">
-          <div class="spinner"></div>
-        </div>
-        <svg id="buttonArrow" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <button type="submit" class="login-button">
+        <span>Ingresar</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M13.8 12H3"></path>
         </svg>
       </button>
@@ -73,438 +57,22 @@
         <line x1="12" y1="8" x2="12" y2="12"></line>
         <line x1="12" y1="16" x2="12.01" y2="16"></line>
       </svg>
-      <span id="errorText">Usuario o contraseña incorrectos</span>
-    </div>
-
-    <!-- Mensaje de rate limiting -->
-    <div id="rateLimitError" class="error-message rate-limit" style="display: none;">
-      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"></circle>
-        <polyline points="12,6 12,12 16,14"></polyline>
-      </svg>
-      <span>Demasiados intentos de login. Espera 15 minutos.</span>
-    </div>
-
-    <!-- Información de ayuda -->
-    <div class="login-help" id="loginHelp" style="display: none;">
-      <div class="help-content">
-        <h3>¿Problemas para acceder?</h3>
-        <ul>
-          <li>Verifica que tu usuario y contraseña sean correctos</li>
-          <li>Asegúrate de tener permisos de staff</li>
-          <li>Si has olvidado tu contraseña, contacta a un director</li>
-          <li>Para problemas técnicos, reporta en Discord</li>
-        </ul>
-      </div>
+      <span>Usuario o contraseña incorrectos</span>
     </div>
     
     <div class="login-footer">
-      <p>Sistema de administración | Finca Roleplay</p>
-      <div class="login-actions">
-        <a href="/main" class="link">← Volver al inicio</a>
-        <a href="#" id="helpToggle" class="link">¿Necesitas ayuda?</a>
-      </div>
+      <p>Sistema de administración | Finca Staff</p>
     </div>
   </div>
   
-  <style>
-    .background-particles {
-      position: fixed;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
-      z-index: -1;
-      pointer-events: none;
-    }
-
-    .particle {
-      position: absolute;
-      width: 4px;
-      height: 4px;
-      background: rgba(153, 153, 153, 0.4);
-      border-radius: 50%;
-      animation: float 8s infinite ease-in-out;
-    }
-
-    @keyframes float {
-      0%, 100% {
-        transform: translateY(0px) rotate(0deg);
-        opacity: 0.4;
-      }
-      50% {
-        transform: translateY(-100px) rotate(180deg);
-        opacity: 0.8;
-      }
-    }
-
-    .loading-spinner {
-      display: inline-flex;
-      align-items: center;
-      margin-right: 8px;
-    }
-
-    .spinner {
-      width: 16px;
-      height: 16px;
-      border: 2px solid transparent;
-      border-top: 2px solid currentColor;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    .login-button[disabled] {
-      opacity: 0.7;
-      cursor: not-allowed;
-      pointer-events: none;
-    }
-
-    .error-message.rate-limit {
-      background: rgba(255, 165, 0, 0.1);
-      border-color: rgba(255, 165, 0, 0.3);
-    }
-
-    .error-message.rate-limit svg {
-      stroke: #ffa500;
-    }
-
-    .login-help {
-      margin-top: 20px;
-      padding: 20px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
-      backdrop-filter: blur(10px);
-      animation: slideDown 0.3s ease-out;
-    }
-
-    @keyframes slideDown {
-      from {
-        opacity: 0;
-        transform: translateY(-10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .help-content h3 {
-      color: #f5f5f5;
-      margin-bottom: 12px;
-      font-size: 1.1rem;
-    }
-
-    .help-content ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    .help-content li {
-      color: #999999;
-      margin-bottom: 8px;
-      padding-left: 20px;
-      position: relative;
-      font-size: 0.9rem;
-      line-height: 1.4;
-    }
-
-    .help-content li:before {
-      content: '•';
-      color: #666666;
-      position: absolute;
-      left: 0;
-      top: 0;
-    }
-
-    .login-actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 10px;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .login-actions .link {
-      color: #999999;
-      text-decoration: none;
-      font-size: 0.9rem;
-      transition: color 0.3s ease;
-      cursor: pointer;
-    }
-
-    .login-actions .link:hover {
-      color: #f5f5f5;
-    }
-
-    /* Responsive improvements */
-    @media (max-width: 480px) {
-      .login-actions {
-        flex-direction: column;
-        text-align: center;
-        gap: 8px;
-      }
-      
-      .login-help {
-        padding: 15px;
-        margin-top: 15px;
-      }
-      
-      .help-content h3 {
-        font-size: 1rem;
-      }
-      
-      .help-content li {
-        font-size: 0.85rem;
-      }
-    }
-
-    /* Animación de entrada mejorada */
-    .login-container {
-      animation: slideInUp 0.6s ease-out;
-    }
-
-    @keyframes slideInUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    /* Efecto de typing para errores */
-    .error-message {
-      animation: errorSlide 0.4s ease-out;
-    }
-
-    @keyframes errorSlide {
-      from {
-        opacity: 0;
-        transform: translateX(-20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
-    }
-  </style>
-  
   <script>
-    // Crear partículas dinámicamente
-    function createParticles() {
-      const particlesContainer = document.querySelector('.background-particles');
-      const particleCount = 15;
-
-      for (let i = 0; i < particleCount; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        particle.style.left = Math.random() * 100 + '%';
-        particle.style.top = Math.random() * 100 + '%';
-        particle.style.animationDelay = Math.random() * 8 + 's';
-        particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
-        particlesContainer.appendChild(particle);
-      }
-    }
-
-    // Inicializar partículas
-    window.addEventListener('load', createParticles);
-
-    // Contador de intentos de login
-    let loginAttempts = parseInt(localStorage.getItem('loginAttempts')) || 0;
-    let lastAttempt = localStorage.getItem('lastLoginAttempt');
-    
-    // Verificar si está en cooldown de rate limiting
-    function checkRateLimit() {
-      if (lastAttempt) {
-        const timeDiff = Date.now() - parseInt(lastAttempt);
-        const cooldownTime = 15 * 60 * 1000; // 15 minutos
-        
-        if (loginAttempts >= 5 && timeDiff < cooldownTime) {
-          const remainingTime = Math.ceil((cooldownTime - timeDiff) / 60000);
-          showRateLimitError(remainingTime);
-          return true;
-        } else if (timeDiff >= cooldownTime) {
-          // Reset contador si ha pasado el tiempo
-          loginAttempts = 0;
-          localStorage.setItem('loginAttempts', '0');
-          localStorage.removeItem('lastLoginAttempt');
-        }
-      }
-      return false;
-    }
-
-    // Mostrar error de rate limiting
-    function showRateLimitError(remainingMinutes) {
-      const rateLimitDiv = document.getElementById('rateLimitError');
-      const errorText = rateLimitDiv.querySelector('span');
-      errorText.textContent = `Demasiados intentos. Espera ${remainingMinutes} minuto${remainingMinutes !== 1 ? 's' : ''} más.`;
-      rateLimitDiv.style.display = 'flex';
-      
-      // Deshabilitar el formulario
-      document.getElementById('loginForm').style.pointerEvents = 'none';
-      document.getElementById('submitBtn').disabled = true;
-    }
-
-    // Manejar envío del formulario
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
-      // Verificar rate limiting antes de enviar
-      if (checkRateLimit()) {
-        e.preventDefault();
-        return;
-      }
-
-      // Mostrar loading
-      const submitBtn = document.getElementById('submitBtn');
-      const buttonText = document.getElementById('buttonText');
-      const buttonArrow = document.getElementById('buttonArrow');
-      const loadingSpinner = document.getElementById('loadingSpinner');
-      
-      submitBtn.disabled = true;
-      buttonText.style.display = 'none';
-      buttonArrow.style.display = 'none';
-      loadingSpinner.style.display = 'inline-flex';
-      
-      // Incrementar contador de intentos
-      loginAttempts++;
-      localStorage.setItem('loginAttempts', loginAttempts.toString());
-      localStorage.setItem('lastLoginAttempt', Date.now().toString());
-      
-      // Simular delay para mejor UX (opcional)
-      setTimeout(() => {
-        // El formulario se enviará normalmente después del delay
-      }, 800);
-    });
-
-    // Toggle ayuda
-    document.getElementById('helpToggle').addEventListener('click', function(e) {
-      e.preventDefault();
-      const helpDiv = document.getElementById('loginHelp');
-      if (helpDiv.style.display === 'none' || helpDiv.style.display === '') {
-        helpDiv.style.display = 'block';
-        this.textContent = 'Ocultar ayuda';
-      } else {
-        helpDiv.style.display = 'none';
-        this.textContent = '¿Necesitas ayuda?';
-      }
-    });
-
-    // Verificar errores en la URL
+    // Check for error parameter in URL
     window.onload = function() {
       const urlParams = new URLSearchParams(window.location.search);
-      const errorParam = urlParams.get('error');
-      
-      if (errorParam === '1') {
-        // Error de credenciales
+      if(urlParams.get('error') === '1') {
         document.getElementById('loginError').style.display = 'flex';
-        
-        // Auto-ocultar después de 5 segundos
-        setTimeout(() => {
-          document.getElementById('loginError').style.display = 'none';
-        }, 5000);
-        
-        // Limpiar URL
-        window.history.replaceState({}, document.title, window.location.pathname);
-      } else if (errorParam === 'rate_limit') {
-        // Error de rate limiting
-        checkRateLimit();
       }
-      
-      // Verificar rate limiting al cargar la página
-      checkRateLimit();
-    };
-
-    // Efectos visuales mejorados
-    document.querySelectorAll('.form-group input').forEach(input => {
-      input.addEventListener('focus', function() {
-        this.parentElement.style.transform = 'translateY(-2px)';
-        this.parentElement.style.boxShadow = '0 8px 25px rgba(102, 102, 102, 0.15)';
-      });
-      
-      input.addEventListener('blur', function() {
-        this.parentElement.style.transform = 'translateY(0)';
-        this.parentElement.style.boxShadow = 'none';
-      });
-    });
-
-    // Validación en tiempo real
-    document.getElementById('username').addEventListener('input', function() {
-      const value = this.value.trim();
-      if (value.length > 0 && value.length < 3) {
-        this.setCustomValidity('El usuario debe tener al menos 3 caracteres');
-      } else if (value.length > 20) {
-        this.setCustomValidity('El usuario no puede tener más de 20 caracteres');
-      } else {
-        this.setCustomValidity('');
-      }
-    });
-
-    document.getElementById('password').addEventListener('input', function() {
-      const value = this.value;
-      if (value.length > 0 && value.length < 4) {
-        this.setCustomValidity('La contraseña debe tener al menos 4 caracteres');
-      } else {
-        this.setCustomValidity('');
-      }
-    });
-
-    // Animación de hover para el botón
-    document.getElementById('submitBtn').addEventListener('mouseenter', function() {
-      if (!this.disabled) {
-        this.style.transform = 'translateY(-2px)';
-        this.style.boxShadow = '0 12px 35px rgba(102, 102, 102, 0.4)';
-      }
-    });
-
-    document.getElementById('submitBtn').addEventListener('mouseleave', function() {
-      if (!this.disabled) {
-        this.style.transform = 'translateY(0)';
-        this.style.boxShadow = '0 8px 25px rgba(102, 102, 102, 0.3)';
-      }
-    });
-
-    // Efecto de typing en los placeholders (opcional, para mayor dinamismo)
-    function typeWriter(element, text, speed = 100) {
-      let i = 0;
-      element.placeholder = '';
-      
-      function type() {
-        if (i < text.length) {
-          element.placeholder += text.charAt(i);
-          i++;
-          setTimeout(type, speed);
-        }
-      }
-      type();
     }
-
-    // Activar efecto typing después de un delay (solo si el campo está vacío)
-    setTimeout(() => {
-      const usernameInput = document.getElementById('username');
-      const passwordInput = document.getElementById('password');
-      
-      if (!usernameInput.value && document.activeElement !== usernameInput) {
-        typeWriter(usernameInput, 'Ingresa tu usuario', 80);
-      }
-      
-      setTimeout(() => {
-        if (!passwordInput.value && document.activeElement !== passwordInput) {
-          typeWriter(passwordInput, 'Ingresa tu contraseña', 80);
-        }
-      }, 1200);
-    }, 2000);
-
-    console.log('🔐 Login page loaded - Finca Roleplay Staff Portal');
-    console.log('🛡️ Security features active: Rate limiting, input validation, XSS protection');
   </script>
 </body>
 </html>
