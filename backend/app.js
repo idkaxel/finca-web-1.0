@@ -483,11 +483,11 @@ app.get('/current-user', (req, res) => {
   }
 });
 
-app.post('/login', (req, res, next) => {
+app.post('/auth', (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
     if (err) return next(err);
-    if (!user) return res.redirect('/login?error=1');
-    req.logIn(user, (err) => {
+    if (!user) return res.redirect('/auth?error=1');
+    req.auth(user, (err) => {
       if (err) return next(err);
       if (user.role === 'director') {
         return res.redirect('/adminpanel');
@@ -510,7 +510,7 @@ app.post('/logout', (req, res, next) => {
         return res.status(500).json({ error: 'Error al cerrar sesión' });
       }
       res.clearCookie('connect.sid');
-      res.json({ success: true, redirect: '/login' });
+      res.json({ success: true, redirect: '/auth' });
     });
   });
 });
