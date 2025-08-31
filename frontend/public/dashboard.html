@@ -774,12 +774,12 @@
         });
         if (res.ok) {
           const data = await res.json();
-          window.location.href = data.redirect || '/auth.html';
+          window.location.href = data.redirect || '/login.html';
         } else {
-          window.location.href = '/auth.html';
+          window.location.href = '/login.html';
         }
       } catch (e) {
-        window.location.href = '/auth.html';
+        window.location.href = '/login.html';
       }
     });
 
@@ -800,7 +800,7 @@
       try {
         const res = await fetch('/activities', { credentials: 'include' });
         if (res.status === 401) {
-          contenedor.innerHTML = '<p>No has iniciado sesión. <a href="/auth.html" style="color: var(--light);">Inicia sesión</a></p>';
+          contenedor.innerHTML = '<p>No has iniciado sesión. <a href="/login.html" style="color: var(--light);">Inicia sesión</a></p>';
           return;
         }
         if (!res.ok) throw new Error('Error al obtener actividades');
