@@ -623,6 +623,8 @@ app.post('/change-password', ensureAuthenticated, async (req, res) => {
   res.json({ message: 'Contraseña actualizada correctamente' });
 });
 
+app.use(express.static(path.join(__dirname, '../frontend/public')));
+
 // Middleware para remover extensión .html de las URLs
 app.use((req, res, next) => {
   if (req.path.endsWith('.html')) {
@@ -640,8 +642,6 @@ app.use((req, res, next) => {
     }
   });
 });
-
-app.use(express.static(path.join(__dirname, '../frontend/public')));
 
 // 🛡️ MIDDLEWARE DE MANEJO DE ERRORES MEJORADO
 app.use((err, req, res, next) => {
