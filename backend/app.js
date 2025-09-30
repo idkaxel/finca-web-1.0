@@ -487,7 +487,7 @@ app.post('/login', (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
     if (err) return next(err);
     if (!user) return res.redirect('/login?error=1');
-    req.auth(user, (err) => {
+    req.logIn(user, (err) => {
       if (err) return next(err);
       if (user.role === 'director') {
         return res.redirect('/adminpanel');
